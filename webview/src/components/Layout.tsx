@@ -1,7 +1,15 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, Package, LogOut, Shield, MessageSquare, AlertTriangle } from "lucide-react";
-import { useAuthStore } from "@/contexts/authContext";
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Users,
+  Package,
+  LogOut,
+  Shield,
+  MessageSquare,
+  AlertTriangle,
+} from 'lucide-react';
+import { useAuth } from '@/contexts/authContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,11 +18,11 @@ interface LayoutProps {
 export default function RootTemplate({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, user } = useAuthStore();
+  const { logout, user } = useAuth();
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate('/');
   };
 
   return (
@@ -46,55 +54,63 @@ export default function RootTemplate({ children }: LayoutProps) {
         <aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
           <nav className="mt-5 px-2">
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate('/dashboard')}
               className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                location.pathname === "/dashboard" ? "bg-red-600 text-white" : "text-gray-600"
-              } ${location.pathname === "/dashboard" ? "hover:bg-red-700" : "hover:bg-gray-50"} w-full`}
+                location.pathname === '/dashboard' ? 'bg-red-600 text-white' : 'text-gray-600'
+              } ${
+                location.pathname === '/dashboard' ? 'hover:bg-red-700' : 'hover:bg-gray-50'
+              } w-full`}
             >
               <LayoutDashboard className="mr-3 h-6 w-6" />
               Painel
             </button>
             <button
-              onClick={() => navigate("/plans")}
+              onClick={() => navigate('/plans')}
               className={`mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                location.pathname === "/plans" ? "bg-red-600 text-white" : "text-gray-600"
-              } ${location.pathname === "/plans" ? "hover:bg-red-700" : "hover:bg-gray-50"} w-full`}
+                location.pathname === '/plans' ? 'bg-red-600 text-white' : 'text-gray-600'
+              } ${location.pathname === '/plans' ? 'hover:bg-red-700' : 'hover:bg-gray-50'} w-full`}
             >
               <Package className="mr-3 h-6 w-6" />
               Configuração de planos
             </button>
             <button
-              onClick={() => navigate("/permissions")}
+              onClick={() => navigate('/permissions')}
               className={`mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                location.pathname === "/permissions" ? "bg-red-600 text-white" : "text-gray-600"
-              } ${location.pathname === "/permissions" ? "hover:bg-red-700" : "hover:bg-gray-50"} w-full`}
+                location.pathname === '/permissions' ? 'bg-red-600 text-white' : 'text-gray-600'
+              } ${
+                location.pathname === '/permissions' ? 'hover:bg-red-700' : 'hover:bg-gray-50'
+              } w-full`}
             >
               <Shield className="mr-3 h-6 w-6" />
               Permissões
             </button>
             <button
-              onClick={() => navigate("/subscriptions")}
+              onClick={() => navigate('/subscriptions')}
               className={`mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                location.pathname === "/subscriptions" ? "bg-red-600 text-white" : "text-gray-600"
-              } ${location.pathname === "/subscriptions" ? "hover:bg-red-700" : "hover:bg-gray-50"} w-full`}
+                location.pathname === '/subscriptions' ? 'bg-red-600 text-white' : 'text-gray-600'
+              } ${
+                location.pathname === '/subscriptions' ? 'hover:bg-red-700' : 'hover:bg-gray-50'
+              } w-full`}
             >
               <Users className="mr-3 h-6 w-6" />
               Assinaturas
             </button>
             <button
-              onClick={() => navigate("/prompts")}
+              onClick={() => navigate('/prompts')}
               className={`mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                location.pathname === "/prompts" ? "bg-red-600 text-white" : "text-gray-600"
-              } ${location.pathname === "/prompts" ? "hover:bg-red-700" : "hover:bg-gray-50"} w-full`}
+                location.pathname === '/prompts' ? 'bg-red-600 text-white' : 'text-gray-600'
+              } ${
+                location.pathname === '/prompts' ? 'hover:bg-red-700' : 'hover:bg-gray-50'
+              } w-full`}
             >
               <MessageSquare className="mr-3 h-6 w-6" />
               LLM Prompts
             </button>
             <button
-              onClick={() => navigate("/logs")}
+              onClick={() => navigate('/logs')}
               className={`mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                location.pathname === "/logs" ? "bg-red-600 text-white" : "text-gray-600"
-              } ${location.pathname === "/logs" ? "hover:bg-red-700" : "hover:bg-gray-50"} w-full`}
+                location.pathname === '/logs' ? 'bg-red-600 text-white' : 'text-gray-600'
+              } ${location.pathname === '/logs' ? 'hover:bg-red-700' : 'hover:bg-gray-50'} w-full`}
             >
               <AlertTriangle className="mr-3 h-6 w-6" />
               Logs de Erro

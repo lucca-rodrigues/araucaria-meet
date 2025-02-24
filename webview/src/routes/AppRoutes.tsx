@@ -5,6 +5,8 @@ import { useAuth } from '@contexts/authContext';
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();
 
+  console.log('isAuthenticated', isAuthenticated);
+
   return (
     <Routes>
       {routes.map(({ path, element, isPublicRoute }) => (

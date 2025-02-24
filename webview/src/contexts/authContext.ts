@@ -21,7 +21,7 @@ export const useAuth = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: true }),
+      setUser: (user) => set({ user, isAuthenticated: false }),
       logout: () => set({ user: null, isAuthenticated: false }),
       login: async (email: string, password: string) => {
         // TODO: Integrar com API real
