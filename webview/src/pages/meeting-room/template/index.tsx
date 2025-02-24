@@ -1,6 +1,15 @@
 import { Video, VideoOff, Mic, MicOff, Users, MessageSquare, PhoneOff } from 'lucide-react';
 import { useState } from 'react';
 
+interface Participant {
+  id: string;
+  userName: string;
+  isVideoEnabled: boolean;
+  isAudioEnabled: boolean;
+  isSpeaking: boolean;
+  videoRef?: React.RefObject<HTMLVideoElement>;
+}
+
 interface TemplatePageProps {
   toggleVideo: () => void;
   toggleAudio: () => void;
@@ -15,6 +24,8 @@ interface TemplatePageProps {
     timestamp: Date;
   }>;
   handleSendMessage: (message: string) => void;
+  participants: Participant[];
+  currentUser: Participant;
 }
 
 export default function TemplatePage({
@@ -26,6 +37,8 @@ export default function TemplatePage({
   handleLeaveMeeting,
   messages,
   handleSendMessage,
+  participants = [],
+  currentUser
 }: TemplatePageProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'participants'>('chat');
@@ -49,24 +62,59 @@ export default function TemplatePage({
         {/* Main Video Area */}
         <div className="flex-1 p-4">
           <div className="grid grid-cols-1 gap-4 h-full">
-            <div className="bg-[#3c4043] rounded-lg overflow-hidden">
-              {isVideoEnabled ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-white text-xl bg-[#3c4043]">
-                  <div className="flex flex-col items-center">
-                    <VideoOff className="w-16 h-16 opacity-40 mb-2" />
-                    <span className="text-sm text-gray-300">Câmera desligada</span>
+            {participants.length === 1 ? (
+              <div className="bg-[#3c4043] rounded-lg overflow-hidden relative">
+                {isVideoEnabled ? (
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white text-xl bg-[#3c4043]">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span className="text-2xl text-white">
+                          {currentUser.userName.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+                )}
+                {currentUser.isSpeaking && (
+                  <div className="absolute inset-0 border-4 border-[#1a73e8] rounded-lg animate-pulse"></div>
+                )}
+              </div>
+            ) : (
+              participants.slice(0, 9).map((participant) => (
+                <div key={participant.id} className="bg-[#3c4043] rounded-lg overflow-hidden relative">
+                  {participant.isVideoEnabled ? (
+                    <video
+                      ref={participant.videoRef}
+                      autoPlay
+                      playsInline
+                      muted={participant.id === currentUser.id}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white text-xl bg-[#3c4043]">
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-xl text-white">
+                            {participant.userName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {participant.isSpeaking && (
+                    <div className="absolute inset-0 border-4 border-[#1a73e8] rounded-lg animate-pulse"></div>
+                  )}
                 </div>
-              )}
-            </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -129,18 +177,14 @@ export default function TemplatePage({
               </div>
             ) : (
               <div className="p-4 space-y-4">
-                <div className="flex items-center text-white">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-sm">JD</span>
+                {participants.map((participant) => (
+                  <div key={participant.id} className="flex items-center text-white">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-sm">{participant.userName.split(' ').map(n => n[0]).join('').toUpperCase()}</span>
+                    </div>
+                    <span>{participant.userName}</span>
                   </div>
-                  <span>João Doe</span>
-                </div>
-                <div className="flex items-center text-white">
-                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-sm">MD</span>
-                  </div>
-                  <span>Maria Doe</span>
-                </div>
+                ))}
               </div>
             )}
           </div>
@@ -148,8 +192,8 @@ export default function TemplatePage({
       </main>
 
       {/* Bottom Controls */}
-      <div className="h-16 bg-[#3c4043] border-t border-[#4a4d51] flex items-center justify-between px-4 fixed bottom-0 left-0 right-0">
-        <div className="flex items-center space-x-2">
+      <div className="h-16 bg-[#3c4043] border-t border-[#4a4d51] flex items-center justify-center px-4 fixed bottom-0 left-0 right-0">
+        <div className="flex items-center justify-center space-x-4">
           <button
             onClick={toggleVideo}
             className={`p-3 rounded-full transition-colors ${isVideoEnabled ? 'bg-[#4a4d51] hover:bg-[#5f6368] text-white' : 'bg-[#ea4335] hover:bg-[#dc3626] text-white'}`}
@@ -163,15 +207,14 @@ export default function TemplatePage({
           >
             {isAudioEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
           </button>
-        </div>
 
-        <div className="flex items-center space-x-2">
           <button
             onClick={toggleSidebar}
             className={`p-3 rounded-full transition-colors ${isSidebarOpen ? 'bg-[#1a73e8] text-white' : 'bg-[#4a4d51] hover:bg-[#5f6368] text-white'}`}
           >
             <MessageSquare className="w-5 h-5" />
           </button>
+
           <button
             onClick={handleLeaveMeeting}
             className="p-3 rounded-full bg-[#ea4335] hover:bg-[#dc3626] text-white transition-colors"

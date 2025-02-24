@@ -19,6 +19,14 @@ export default function useMeetingRoom() {
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [pageData, setPageData] = useState<any>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [currentUser, setCurrentUser] = useState<Participant>({ 
+    id: 'current-user',
+    userName: 'You',
+    isVideoEnabled: false,
+    isAudioEnabled: false,
+    isSpeaking: false
+  });
 
   const {
     isVideoEnabled,
@@ -40,6 +48,7 @@ export default function useMeetingRoom() {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
           }
+          setCurrentUser(prev => ({ ...prev, isVideoEnabled: true }));
         }
 
         if (isAudioEnabled) {
@@ -47,6 +56,7 @@ export default function useMeetingRoom() {
             audio: audioDeviceId ? { deviceId: audioDeviceId } : true,
           });
           setAudioStream(stream);
+          setCurrentUser(prev => ({ ...prev, isAudioEnabled: true }));
         }
       } catch (error) {
         console.error('Error accessing media devices:', error);
@@ -64,11 +74,13 @@ export default function useMeetingRoom() {
   const toggleVideo = () => {
     setVideoEnabled(!isVideoEnabled);
     videoStream?.getTracks().forEach(track => track.enabled = !track.enabled);
+    setCurrentUser(prev => ({ ...prev, isVideoEnabled: !prev.isVideoEnabled }));
   };
 
   const toggleAudio = () => {
     setAudioEnabled(!isAudioEnabled);
     audioStream?.getTracks().forEach(track => track.enabled = !track.enabled);
+    setCurrentUser(prev => ({ ...prev, isAudioEnabled: !prev.isAudioEnabled }));
   };
 
   const handleLeaveMeeting = () => {
@@ -76,8 +88,15 @@ export default function useMeetingRoom() {
   };
 
   async function getMeetingRoom() {
-    const response = await service.get();
-    setPageData(response);
+    try {
+      const response = await service.get();
+      setPageData(response);
+      // Initialize with current user as the only participant for now
+      setParticipants([currentUser]);
+    } catch (error) {
+      console.error('Error fetching meeting room:', error);
+      // Handle error appropriately
+    }
   }
 
   const handleSendMessage = (message: string) => {
@@ -85,7 +104,7 @@ export default function useMeetingRoom() {
 
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
-      userName: 'You', // In a real app, this would come from user context
+      userName: currentUser.userName,
       message: message.trim(),
       timestamp: new Date()
     };
@@ -107,6 +126,8 @@ export default function useMeetingRoom() {
     getMeetingRoom,
     pageData,
     messages,
-    handleSendMessage
+    handleSendMessage,
+    participants,
+    currentUser
   };
 }
