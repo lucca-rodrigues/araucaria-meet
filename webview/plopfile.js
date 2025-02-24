@@ -1,4 +1,4 @@
-module.exports = function (plop) {
+export default function (plop) {
   plop.setGenerator('page', {
     description: 'Criar uma nova página',
     prompts: [
@@ -56,4 +56,4 @@ module.exports = function (plop) {
       },
     ],
   });
-};
+}
