@@ -1,0 +1,22 @@
+import { useEffect } from 'react';
+import TemplatePage from './template';
+import use{{properCase pageName}} from './hooks';
+
+export default function {{properCase pageName}}() {
+  const hookParams = use{{properCase pageName}}();
+  const { get{{properCase pageName}} } = hookParams;
+
+  const sharedProps = {
+    ...hookParams
+  };
+
+  useEffect(() => {
+      get{{properCase pageName}}();
+  },[]);
+
+  return (
+    <>
+      <TemplatePage {...sharedProps} />
+    </>
+  );
+}

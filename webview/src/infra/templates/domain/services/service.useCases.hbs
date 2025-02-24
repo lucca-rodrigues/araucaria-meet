@@ -1,0 +1,26 @@
+import HttpClient from "@infra/httpRequest";
+
+const service = new HttpClient();
+
+export default class {{properCase pageName}}Services {
+  async get() {
+    const response = await service.get(`/{{kebabCase pageName}}`);
+
+    return response?.data;
+  }
+
+  async getById(id: string) {
+    const response = await service.get(`/{{kebabCase pageName}}/${id}`);
+
+    return response?.data;
+  }
+
+  async create(data: any) {
+    const response = await service.post(
+      `/{{kebabCase pageName}}`,
+      data
+    );
+
+    return response?.data;
+  }
+}

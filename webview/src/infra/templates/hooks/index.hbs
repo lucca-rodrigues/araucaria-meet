@@ -1,0 +1,35 @@
+import { useRef, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { {{properCase pageName}}Services } from "../domain";
+
+export default function use{{properCase pageName}}() {  
+  const service = new {{properCase pageName}}Services();
+  const [pageData, setPageData] = useState()
+
+  const navigate = useNavigate(); 
+  const { control, handleSubmit, watch, setValue, register, formState: { errors } } = useForm();
+  const watchFields = watch();
+
+  const [isLoading, setIsLoading] = useState(false); 
+
+  async function get{{properCase pageName}}() {
+    const response = await service.get();
+    setPageData(response);
+  }
+
+  return { 
+    isLoading, 
+    setIsLoading,
+    control, 
+    handleSubmit, 
+    watch, 
+    setValue, 
+    watchFields,
+    navigate,
+    get{{properCase pageName}},
+    pageData,
+    errors,
+    register
+  }; 
+}
