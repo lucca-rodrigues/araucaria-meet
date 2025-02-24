@@ -1,13 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMedia } from '@/contexts/mediaContext';
 import { LobbyServices } from '../domain';
 
 export default function useLobby() {
+  const navigate = useNavigate();
+  const service = new LobbyServices();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [pageData, setPageData] = useState<any>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const service = new LobbyServices();
+  const [userName, setUserName] = useState('');
+  const [isWaiting, setIsWaiting] = useState(false);
 
   const {
     isVideoEnabled,
@@ -52,16 +57,46 @@ export default function useLobby() {
 
   const toggleVideo = () => {
     setVideoEnabled(!isVideoEnabled);
-    videoStream?.getTracks().forEach(track => track.enabled = !track.enabled);
+    videoStream?.getTracks().forEach((track) => (track.enabled = !track.enabled));
   };
 
   const toggleAudio = () => {
     setAudioEnabled(!isAudioEnabled);
-    audioStream?.getTracks().forEach(track => track.enabled = !track.enabled);
+    audioStream?.getTracks().forEach((track) => (track.enabled = !track.enabled));
   };
 
-  const handleJoinMeeting = () => {
-    console.log('Joining meeting with:', { videoStream, audioStream });
+  const handleJoinMeeting = async () => {
+    if (!userName.trim()) {
+      return;
+    }
+
+    try {
+      // const response = await service.create({
+      //   userName,
+      //   isVideoEnabled,
+      //   isAudioEnabled,
+      // });
+
+      // const hasParticipants = response?.participants?.length > 0;
+
+      // if (hasParticipants) {
+      //   setIsWaiting(true);
+      //   // Poll for approval status
+      //   const pollInterval = setInterval(async () => {
+      //     const status = await service.get();
+      //     if (status?.approved) {
+      //       clearInterval(pollInterval);
+      //       navigate('/meeting-room');
+      //     }
+      //   }, 3000);
+      // } else {
+      //   // If no participants, directly navigate to meeting room
+      //   navigate('/meeting-room');
+      // }
+      navigate('/meeting-room');
+    } catch (error) {
+      console.error('Error joining meeting:', error);
+    }
   };
 
   async function getLobby() {
@@ -80,8 +115,10 @@ export default function useLobby() {
     videoRef,
     isVideoEnabled,
     isAudioEnabled,
-    watchFields: {},
+    userName,
+    setUserName,
+    isWaiting,
     getLobby,
-    pageData
+    pageData,
   };
 }

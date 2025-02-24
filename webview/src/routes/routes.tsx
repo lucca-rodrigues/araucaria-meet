@@ -1,4 +1,5 @@
 import Lobby from '@/pages/lobby';
+import MeetingRoom from '@/pages/meeting-room';
 
 const routes: {
   path: string;
@@ -6,6 +7,7 @@ const routes: {
   isPublicRoute: boolean;
 }[] = [
   { path: '/', element: <Lobby />, isPublicRoute: true },
+  { path: '/room-meeting', element: <MeetingRoom />, isPublicRoute: true },
   // { path: '/dashboard', element: <Dashboard />, isPublicRoute: false },
   // { path: '/plans', element: <Plans />, isPublicRoute: false },
   // { path: '/permissions', element: <Permissions />, isPublicRoute: false },

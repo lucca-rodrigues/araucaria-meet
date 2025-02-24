@@ -7,6 +7,9 @@ interface TemplatePageProps {
   videoRef: React.RefObject<HTMLVideoElement>;
   isVideoEnabled: boolean;
   isAudioEnabled: boolean;
+  userName: string;
+  setUserName: (name: string) => void;
+  isWaiting: boolean;
 }
 
 export default function TemplatePage({
@@ -16,6 +19,9 @@ export default function TemplatePage({
   toggleVideo,
   toggleAudio,
   handleJoinMeeting,
+  userName,
+  setUserName,
+  isWaiting,
 }: TemplatePageProps) {
   return (
     <div className="flex min-h-screen bg-[#202124]">
@@ -66,30 +72,43 @@ export default function TemplatePage({
 
       <div className="w-[400px] bg-white flex flex-col justify-center shadow-lg">
         <div className="px-10 py-8">
-          <h2 className="text-[22px] font-normal text-[#202124] mb-8">Pronto para participar?</h2>
-          <div className="mb-8">
-            <label htmlFor="name" className="block text-sm font-medium text-[#5f6368] mb-1">
-              Qual é seu nome?
-            </label>
-            <input
-              type="text"
-              id="name"
-              className="w-full px-3 py-2 border border-[#dadce0] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1a73e8] focus:border-transparent text-base"
-              placeholder="Digite seu nome"
-            />
-            <div className="text-right text-xs text-[#5f6368] mt-1">5/60</div>
-          </div>
+          {isWaiting ? (
+            <div className="text-center">
+              <h2 className="text-[22px] font-normal text-[#202124] mb-4">Aguardando aprovação</h2>
+              <p className="text-[#5f6368]">Você será admitido assim que um participante aprovar sua entrada.</p>
+            </div>
+          ) : (
+            <>
+              <h2 className="text-[22px] font-normal text-[#202124] mb-8">Pronto para participar?</h2>
+              <div className="mb-8">
+                <label htmlFor="name" className="block text-sm font-medium text-[#5f6368] mb-1">
+                  Qual é seu nome?
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  maxLength={60}
+                  className="w-full px-3 py-2 border border-[#dadce0] rounded-md focus:outline-none focus:ring-2 focus:ring-[#1a73e8] focus:border-transparent text-base"
+                  placeholder="Digite seu nome"
+                />
+                <div className="text-right text-xs text-[#5f6368] mt-1">{userName.length}/60</div>
+              </div>
 
-          <button
-            onClick={handleJoinMeeting}
-            className="w-full bg-[#1a73e8] hover:bg-[#1557b0] text-white py-2.5 px-6 rounded-md font-medium text-sm transition-colors"
-          >
-            Pedir para participar
-          </button>
+              <button
+                onClick={handleJoinMeeting}
+                disabled={!userName.trim()}
+                className={`w-full ${userName.trim() ? 'bg-[#1a73e8] hover:bg-[#1557b0]' : 'bg-[#dadce0] cursor-not-allowed'} text-white py-2.5 px-6 rounded-md font-medium text-sm transition-colors`}
+              >
+                Pedir para participar
+              </button>
 
-          <button className="w-full mt-4 text-[#1a73e8] hover:text-[#1557b0] hover:underline text-sm font-medium transition-colors">
-            Outras formas de participar
-          </button>
+              <button className="w-full mt-4 text-[#1a73e8] hover:text-[#1557b0] hover:underline text-sm font-medium transition-colors">
+                Outras formas de participar
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

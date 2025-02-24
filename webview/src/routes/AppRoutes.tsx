@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import routes from './routes';
-import RootTemplate from '@/components/Layout';
 import { useAuth } from '@contexts/authContext';
+
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();
 
-  console.log('isAuthenticated', isAuthenticated);
+  // Temporarily set isAuthenticated to true for development
+  const tempAuth = false;
 
   return (
     <Routes>
@@ -14,11 +15,11 @@ export default function AppRoutes() {
           key={path}
           path={path}
           element={
-            isAuthenticated ? (
+            tempAuth ? (
               isPublicRoute ? (
-                <Navigate to="/dashboard" replace />
+                <Navigate to="/room-meeting" replace />
               ) : (
-                <RootTemplate>{element}</RootTemplate>
+                element
               )
             ) : isPublicRoute ? (
               element
@@ -28,6 +29,7 @@ export default function AppRoutes() {
           }
         />
       ))}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
