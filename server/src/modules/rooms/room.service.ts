@@ -1,6 +1,6 @@
 import { RoomUseCases } from "./room.useCases";
-import { CreateRoomDto, JoinRoomDto, LeaveRoomDto, EndRoomDto } from "./dto/room.dto";
-import { Room, Participant } from "./interfaces/room.interface";
+import { CreateRoomDto, JoinRoomDto, LeaveRoomDto, EndRoomDto, ScheduleRoomDto, SaveMessageDto, GetMessagesDto } from "./dto/room.dto";
+import { Room, Participant, Message } from "./interfaces/room.interface";
 import logger from "../../config/logger";
 
 export class RoomService {
@@ -12,6 +12,24 @@ export class RoomService {
       return await this.roomUseCases.createRoom(createRoomDto);
     } catch (error) {
       logger.error("Error in createRoom service:", error);
+      throw error;
+    }
+  }
+
+  async scheduleRoom(
+    owner: string,
+    scheduleUsers: string[],
+    scheduleDate: Date,
+    scheduleDateEnd: Date,
+    scheduleTitle: string,
+    scheduleDescription: string
+  ): Promise<Room> {
+    try {
+      const scheduleRoomDto = new ScheduleRoomDto(owner, scheduleUsers, scheduleDate, scheduleDateEnd, scheduleTitle, scheduleDescription);
+
+      return await this.roomUseCases.scheduleRoom(scheduleRoomDto);
+    } catch (error) {
+      logger.error("Error in scheduleRoom service:", error);
       throw error;
     }
   }
@@ -51,6 +69,35 @@ export class RoomService {
       return await this.roomUseCases.endRoom(endRoomDto);
     } catch (error) {
       logger.error(`Error in endRoom service for room ${roomId}:`, error);
+      throw error;
+    }
+  }
+
+  async saveMessage(roomId: string, userId: string, userName: string, content: string): Promise<Message> {
+    try {
+      const saveMessageDto = new SaveMessageDto(roomId, userId, userName, content);
+      return await this.roomUseCases.saveMessage(saveMessageDto);
+    } catch (error) {
+      logger.error(`Error in saveMessage service for room ${roomId}:`, error);
+      throw error;
+    }
+  }
+
+  async getMessages(roomId: string): Promise<Message[]> {
+    try {
+      const getMessagesDto: GetMessagesDto = { roomId };
+      return await this.roomUseCases.getMessages(getMessagesDto);
+    } catch (error) {
+      logger.error(`Error getting messages for room ${roomId}:`, error);
+      throw error;
+    }
+  }
+
+  async getAllRooms(): Promise<Room[]> {
+    try {
+      return await this.roomUseCases.getAllRooms();
+    } catch (error) {
+      logger.error("Error getting all rooms:", error);
       throw error;
     }
   }

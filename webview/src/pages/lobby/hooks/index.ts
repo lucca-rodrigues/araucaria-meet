@@ -1,18 +1,32 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMedia } from '@/contexts/mediaContext';
-import { LobbyServices } from '../domain';
+import apiService from '@/infra/services/api';
 
 export default function useLobby() {
   const navigate = useNavigate();
-  const service = new LobbyServices();
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
-  const [pageData, setPageData] = useState<any>(null);
   const [userName, setUserName] = useState('');
-  const [isWaiting, setIsWaiting] = useState(false);
+  const [isCreatingRoom, setIsCreatingRoom] = useState(false);
+  const [roomId, setRoomId] = useState('');
+  const [isJoiningRoom, setIsJoiningRoom] = useState(false);
+
+  // Estados para agendamento
+  const [isSchedulingMode, setIsSchedulingMode] = useState(false);
+  const [scheduleTitle, setScheduleTitle] = useState('');
+  const [scheduleDescription, setScheduleDescription] = useState('');
+  const [scheduleOwnerEmail, setScheduleOwnerEmail] = useState('');
+  const [scheduleParticipantEmail, setScheduleParticipantEmail] = useState('');
+  const [scheduleParticipants, setScheduleParticipants] = useState<string[]>([]);
+  const [scheduleDate, setScheduleDate] = useState('');
+  const [scheduleTime, setScheduleTime] = useState('');
+  const [scheduleEndDate, setScheduleEndDate] = useState('');
+  const [scheduleEndTime, setScheduleEndTime] = useState('');
+  const [isScheduling, setIsScheduling] = useState(false);
+  const [scheduleError, setScheduleError] = useState('');
 
   const {
     isVideoEnabled,
@@ -65,60 +79,202 @@ export default function useLobby() {
     audioStream?.getTracks().forEach((track) => (track.enabled = !track.enabled));
   };
 
-  const handleJoinMeeting = async () => {
+  const handleCreateRoom = async () => {
     if (!userName.trim()) {
       return;
     }
 
     try {
-      // const response = await service.create({
-      //   userName,
-      //   isVideoEnabled,
-      //   isAudioEnabled,
-      // });
+      setIsCreatingRoom(true);
 
-      // const hasParticipants = response?.participants?.length > 0;
+      // Armazenar nome do usuário para uso posterior
+      localStorage.setItem('userName', userName);
 
-      // if (hasParticipants) {
-      //   setIsWaiting(true);
-      //   // Poll for approval status
-      //   const pollInterval = setInterval(async () => {
-      //     const status = await service.get();
-      //     if (status?.approved) {
-      //       clearInterval(pollInterval);
-      //       navigate('/meeting-room');
-      //     }
-      //   }, 3000);
-      // } else {
-      //   // If no participants, directly navigate to meeting room
-      //   navigate('/meeting-room');
-      // }
-      navigate('/meeting-room');
+      const room = await apiService.createRoom(userName, isVideoEnabled, isAudioEnabled);
+
+      // Corrigir a rota para usar o caminho definido em routes.tsx
+      navigate(`/room-meeting?roomId=${room.roomId}`);
     } catch (error) {
-      console.error('Error joining meeting:', error);
+      console.error('Error creating room:', error);
+    } finally {
+      setIsCreatingRoom(false);
     }
   };
 
-  async function getLobby() {
-    const response = await service.get();
-    setPageData(response);
-  }
+  const handleJoinRoom = async () => {
+    if (!userName.trim() || !roomId.trim()) {
+      return;
+    }
+
+    try {
+      setIsJoiningRoom(true);
+
+      // Armazenar nome do usuário para uso posterior
+      localStorage.setItem('userName', userName);
+
+      await apiService.joinRoom(roomId, userName, isVideoEnabled, isAudioEnabled);
+
+      // Corrigir a rota para usar o caminho definido em routes.tsx
+      navigate(`/room-meeting?roomId=${roomId}`);
+    } catch (error) {
+      console.error('Error joining room:', error);
+    } finally {
+      setIsJoiningRoom(false);
+    }
+  };
+
+  const toggleSchedulingMode = () => {
+    setIsSchedulingMode(!isSchedulingMode);
+  };
+
+  const addParticipant = () => {
+    if (scheduleParticipantEmail && !scheduleParticipants.includes(scheduleParticipantEmail)) {
+      setScheduleParticipants([...scheduleParticipants, scheduleParticipantEmail]);
+      setScheduleParticipantEmail('');
+    }
+  };
+
+  const removeParticipant = (email: string) => {
+    setScheduleParticipants(scheduleParticipants.filter((p) => p !== email));
+  };
+
+  const handleScheduleRoom = async () => {
+    setScheduleError('');
+
+    if (
+      !scheduleTitle ||
+      !scheduleOwnerEmail ||
+      !scheduleDate ||
+      !scheduleTime ||
+      !scheduleEndDate ||
+      !scheduleEndTime
+    ) {
+      setScheduleError('Por favor, preencha todos os campos obrigatórios');
+      return;
+    }
+
+    // Verificar formato de email do organizador
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(scheduleOwnerEmail)) {
+      setScheduleError('Email do organizador inválido');
+      return;
+    }
+
+    // Verificar emails dos participantes
+    for (const email of scheduleParticipants) {
+      if (!emailRegex.test(email)) {
+        setScheduleError(`Email inválido para o participante: ${email}`);
+        return;
+      }
+    }
+
+    // Converter as datas e horas para o formato correto
+    const startDateObj = new Date(`${scheduleDate}T${scheduleTime}`);
+    const endDateObj = new Date(`${scheduleEndDate}T${scheduleEndTime}`);
+
+    // Verificar se a data de início é anterior à data de término
+    if (startDateObj >= endDateObj) {
+      setScheduleError('A data de início deve ser anterior à data de término');
+      return;
+    }
+
+    try {
+      setIsScheduling(true);
+
+      // Chamar a API para agendar a sala
+      const room = await apiService.scheduleRoom(
+        scheduleOwnerEmail,
+        scheduleParticipants,
+        startDateObj,
+        endDateObj,
+        scheduleTitle,
+        scheduleDescription
+      );
+
+      // Limpar campos e mostrar mensagem de sucesso
+      resetScheduleForm();
+      // Mostrar algum feedback de sucesso (você pode adicionar um estado para isso)
+      alert(`Reunião agendada com sucesso! ID da sala: ${room.roomId}`);
+    } catch (error) {
+      console.error('Error scheduling room:', error);
+      setScheduleError('Erro ao agendar reunião. Por favor, tente novamente.');
+    } finally {
+      setIsScheduling(false);
+    }
+  };
+
+  const resetScheduleForm = () => {
+    setIsSchedulingMode(false);
+    setScheduleTitle('');
+    setScheduleDescription('');
+    setScheduleOwnerEmail('');
+    setScheduleParticipantEmail('');
+    setScheduleParticipants([]);
+    setScheduleDate('');
+    setScheduleTime('');
+    setScheduleEndDate('');
+    setScheduleEndTime('');
+    setScheduleError('');
+  };
+
+  const getLobby = useCallback(() => {
+    // Método para carregar dados iniciais da tela de lobby, se necessário
+    const savedUserName = localStorage.getItem('userName');
+    if (savedUserName) {
+      setUserName(savedUserName);
+    }
+  }, []);
 
   return {
-    videoStream,
-    audioStream,
-    setVideoStream,
-    setAudioStream,
-    toggleVideo,
-    toggleAudio,
-    handleJoinMeeting,
     videoRef,
-    isVideoEnabled,
-    isAudioEnabled,
     userName,
     setUserName,
-    isWaiting,
+    roomId,
+    setRoomId,
+    isVideoEnabled,
+    isAudioEnabled,
+    toggleVideo,
+    toggleAudio,
+    handleCreateRoom,
+    handleJoinRoom,
+    isCreatingRoom,
+    isJoiningRoom,
+    // Estados e métodos para agendamento
+    isSchedulingMode,
+    toggleSchedulingMode,
+    scheduleTitle,
+    setScheduleTitle,
+    scheduleDescription,
+    setScheduleDescription,
+    scheduleOwnerEmail,
+    setScheduleOwnerEmail,
+    scheduleParticipantEmail,
+    setScheduleParticipantEmail,
+    scheduleParticipants,
+    addParticipant,
+    removeParticipant,
+    scheduleDate,
+    setScheduleDate,
+    scheduleTime,
+    setScheduleTime,
+    scheduleEndDate,
+    setScheduleEndDate,
+    scheduleEndTime,
+    setScheduleEndTime,
+    handleScheduleRoom,
+    isScheduling,
+    scheduleError,
+    resetScheduleForm,
     getLobby,
-    pageData,
+    // Para compatibilidade com o template
+    handleJoinMeeting: () => {
+      if (roomId) {
+        handleJoinRoom();
+      } else {
+        handleCreateRoom();
+      }
+    },
+    // Estado de espera (pode ser usado para indicar que está aguardando aprovação)
+    isWaiting: isJoiningRoom || isCreatingRoom,
   };
 }

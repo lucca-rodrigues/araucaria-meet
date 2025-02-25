@@ -1,0 +1,96 @@
+### Variáveis
+@baseUrl = http://localhost:3000/api
+@roomId = replace-with-your-room-id
+
+### Listar todas as salas
+GET {{baseUrl}}/rooms
+Content-Type: application/json
+
+### Criar uma nova sala
+# @name createRoom
+POST {{baseUrl}}/rooms
+Content-Type: application/json
+
+{
+  "hostId": "user-123",
+  "userName": "Host",
+  "startTime": "{{$datetime iso8601}}",
+  "endTime": "{{$datetime iso8601 1 h}}"
+}
+
+### Armazenar roomId da resposta
+@roomId = {{createRoom.response.body.roomId}}
+
+### Agendar uma nova sala
+POST {{baseUrl}}/rooms/schedule
+Content-Type: application/json
+
+{
+  "owner": "email.owner@email.com",
+  "schedule_users": ["email.schedules@email.com"],
+  "schedule_date": "24/02/2025 20:55",
+  "schedule_date_end": "24/02/2025 21:30",
+  "schedule_title": "Title from room",
+  "schedule_description": "Description from room"
+}
+
+### Obter detalhes da sala criada
+GET {{baseUrl}}/rooms/{{roomId}}
+Content-Type: application/json
+
+### Entrar em uma sala
+POST {{baseUrl}}/rooms/{{roomId}}/join
+Content-Type: application/json
+
+{
+  "participant": {
+    "id": "user-456",
+    "userName": "Participante",
+    "isVideoEnabled": true,
+    "isAudioEnabled": true,
+    "email": "participante@email.com"
+  }
+}
+
+### Sair de uma sala
+POST {{baseUrl}}/rooms/{{roomId}}/leave
+Content-Type: application/json
+
+{
+  "participantId": "user-456"
+}
+
+### Obter mensagens de uma sala
+GET {{baseUrl}}/rooms/{{roomId}}/messages
+Content-Type: application/json
+
+### Finalizar uma sala
+POST {{baseUrl}}/rooms/{{roomId}}/end
+Content-Type: application/json
+
+### Criar uma sala de teste com horário ajustado para acesso imediato
+# @name createTestRoom
+POST {{baseUrl}}/rooms/test
+Content-Type: application/json
+
+{
+  "hostId": "user-teste-123",
+  "userName": "Usuário Teste"
+}
+
+### Armazenar roomId da resposta de teste
+@testRoomId = {{createTestRoom.response.body.roomId}}
+
+### Entrar na sala de teste
+POST {{baseUrl}}/rooms/{{testRoomId}}/join
+Content-Type: application/json
+
+{
+  "participant": {
+    "id": "user-participante-123",
+    "userName": "Participante Teste",
+    "isVideoEnabled": true,
+    "isAudioEnabled": true,
+    "email": "teste@email.com"
+  }
+} 

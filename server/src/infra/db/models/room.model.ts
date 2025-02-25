@@ -9,6 +9,14 @@ const participantSchema = new mongoose.Schema({
   isVideoEnabled: { type: Boolean, default: false },
   isAudioEnabled: { type: Boolean, default: false },
   socketId: { type: String },
+  email: { type: String },
+});
+
+const scheduleInfoSchema = new mongoose.Schema({
+  title: { type: String },
+  description: { type: String },
+  owner: { type: String, required: true },
+  scheduleUsers: { type: [String], default: [] },
 });
 
 const roomSchema = new mongoose.Schema(
@@ -33,6 +41,9 @@ const roomSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    scheduleInfo: {
+      type: scheduleInfoSchema,
     },
   },
   {

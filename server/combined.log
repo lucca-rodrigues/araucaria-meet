@@ -4,3 +4,45 @@
 {"errorLabelSet":{},"level":"error","message":"MongoDB connection error: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017","reason":{"commonWireVersion":0,"compatible":true,"heartbeatFrequencyMS":10000,"localThresholdMS":15,"logicalSessionTimeoutMinutes":null,"maxElectionId":null,"maxSetVersion":null,"servers":{"localhost:27017":{"$clusterTime":null,"address":"localhost:27017","arbiters":[],"electionId":null,"error":{"beforeHandshake":false,"errorLabelSet":{}},"hosts":[],"iscryptd":false,"lastUpdateTime":36160791,"lastWriteDate":0,"logicalSessionTimeoutMinutes":null,"maxBsonObjectSize":null,"maxMessageSizeBytes":null,"maxWireVersion":0,"maxWriteBatchSize":null,"me":null,"minRoundTripTime":0,"minWireVersion":0,"passives":[],"primary":null,"roundTripTime":-1,"setName":null,"setVersion":null,"tags":{},"topologyVersion":null,"type":"Unknown"}},"setName":null,"stale":false,"type":"Unknown"},"stack":"MongooseServerSelectionError: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017\n    at _handleConnectionErrors (/Users/macbook-air/Desktop/Develop/Elite-tech/POCS/araucaria-meet/server/node_modules/mongoose/lib/connection.js:1163:11)\n    at NativeConnection.openUri (/Users/macbook-air/Desktop/Develop/Elite-tech/POCS/araucaria-meet/server/node_modules/mongoose/lib/connection.js:1094:11)","timestamp":"2025-02-24T21:27:08.405Z"}
 {"level":"warn","message":"Running without MongoDB connection. Some features may not work properly.","timestamp":"2025-02-24T21:27:08.408Z"}
 {"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T21:42:18.003Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:34:11.596Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:34:11.635Z"}
+{"level":"info","message":"Room created with ID: 093-01ec-432 (in-memory)","timestamp":"2025-02-24T23:34:17.095Z"}
+{"level":"warn","message":"Room 093-01ec-432 is not available","timestamp":"2025-02-24T23:34:30.859Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:41:22.475Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:41:22.514Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:41:30.500Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:41:30.519Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:41:39.587Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:41:39.608Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:41:49.792Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:41:49.821Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:41:59.561Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:41:59.583Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:42:08.499Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:42:08.531Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:42:48.297Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:42:48.322Z"}
+{"level":"info","message":"Room created with ID: 96b-ff23-e92 (in-memory)","timestamp":"2025-02-24T23:43:22.340Z"}
+{"level":"warn","message":"Room 96b-ff23-e92 is not available","timestamp":"2025-02-24T23:53:07.702Z"}
+{"level":"info","message":"Room created with ID: 0e3-0df1-f59 (in-memory)","timestamp":"2025-02-24T23:53:53.092Z"}
+{"level":"info","message":"Participant d577b161-c03c-4b9d-aaec-8aef73993803 added to room 0e3-0df1-f59 (in-memory)","timestamp":"2025-02-24T23:54:00.363Z"}
+{"level":"info","message":"Participant d577b161-c03c-4b9d-aaec-8aef73993803 added to room 0e3-0df1-f59 (in-memory)","timestamp":"2025-02-24T23:54:06.482Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-24T23:56:36.021Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-24T23:56:36.042Z"}
+{"level":"info","message":"Server running on port 3000","timestamp":"2025-02-25T00:00:24.840Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-25T00:00:24.862Z"}
+{"level":"info","message":"Dados recebidos para agendamento: data início=24/02/2025 20:55, data fim=24/02/2025 21:30","timestamp":"2025-02-25T00:00:30.130Z"}
+{"level":"info","message":"Data início parseada: 2025-02-24T23:55:00.000Z","timestamp":"2025-02-25T00:00:30.130Z"}
+{"level":"info","message":"Data fim parseada: 2025-02-25T00:30:00.000Z","timestamp":"2025-02-25T00:00:30.130Z"}
+{"level":"info","message":"Room created with ID: a14-9eb0-28a (in-memory)","timestamp":"2025-02-25T00:00:30.131Z"}
+{"level":"info","message":"Participant d577b161-c03c-4b9d-aaec-8aef73993803 added to room a14-9eb0-28a (in-memory)","timestamp":"2025-02-25T00:00:44.891Z"}
+{"level":"info","message":"Participant d577b161-c03c-4b9d-aaec-8aef73993803 added to room a14-9eb0-28a (in-memory)","timestamp":"2025-02-25T00:00:54.831Z"}
+{"level":"info","message":"Participant d577b161-c03c-4b9d-aaec-8aef73993803 added to room a14-9eb0-28a (in-memory)","timestamp":"2025-02-25T00:05:30.042Z"}
+{"level":"info","message":"Participant d577b161-c03c-4b9d-aaec-8aef73993803 added to room a14-9eb0-28a (in-memory)","timestamp":"2025-02-25T00:09:43.470Z"}
+{"level":"info","message":"Client connected: xLduMJp-fwqKgcTsAAAB","timestamp":"2025-02-25T00:09:43.551Z"}
+{"level":"warn","message":"Room a14-9eb0-28a not found","timestamp":"2025-02-25T00:09:43.555Z"}
+{"level":"warn","message":"Room a14-9eb0-28a not found","timestamp":"2025-02-25T00:09:43.559Z"}
+{"level":"info","message":"Client disconnected: xLduMJp-fwqKgcTsAAAB","timestamp":"2025-02-25T00:09:55.391Z"}
+{"level":"info","message":"Client connected: R7nVPnLicjSAcUUkAAAD","timestamp":"2025-02-25T00:09:57.454Z"}
+{"level":"warn","message":"Room a14-9eb0-28a not found","timestamp":"2025-02-25T00:09:57.470Z"}
+{"level":"warn","message":"Room a14-9eb0-28a not found","timestamp":"2025-02-25T00:09:57.472Z"}

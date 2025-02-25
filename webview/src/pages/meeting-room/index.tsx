@@ -7,12 +7,19 @@ export default function MeetingRoom() {
   const { getMeetingRoom } = hookParams;
 
   const sharedProps = {
-    ...hookParams
+    ...hookParams,
   };
 
   useEffect(() => {
-      getMeetingRoom();
-  },[]);
+    // Adicionar log para debug
+    console.log('MeetingRoom component mounted - initializing room');
+    getMeetingRoom();
+
+    // Adicionar limpeza ao desmontar
+    return () => {
+      console.log('MeetingRoom component unmounted - cleaning up');
+    };
+  }, [getMeetingRoom]);
 
   return (
     <>

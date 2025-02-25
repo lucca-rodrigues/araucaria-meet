@@ -1,11 +1,13 @@
-import { Room, Participant, RoomRepository } from "../../../modules/rooms/interfaces/room.interface";
+import { Room, Participant, RoomRepository, Message } from "../../../modules/rooms/interfaces/room.interface";
 import logger from "../../../config/logger";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Implementação de repositório em memória para uso em desenvolvimento ou quando MongoDB não está disponível
  */
 export class InMemoryRoomRepository implements RoomRepository {
   private rooms: Map<string, Room> = new Map();
+  private messages: Map<string, Message[]> = new Map();
 
   async create(room: Partial<Room>): Promise<Room> {
     if (!room.roomId) {
@@ -22,6 +24,7 @@ export class InMemoryRoomRepository implements RoomRepository {
       isActive: room.isActive ?? true,
       createdAt: now,
       updatedAt: now,
+      scheduleInfo: room.scheduleInfo,
     };
 
     this.rooms.set(newRoom.roomId, newRoom);
@@ -33,6 +36,10 @@ export class InMemoryRoomRepository implements RoomRepository {
   async findByRoomId(roomId: string): Promise<Room | null> {
     const room = this.rooms.get(roomId);
     return room || null;
+  }
+
+  async findAll(): Promise<Room[]> {
+    return Array.from(this.rooms.values());
   }
 
   async update(roomId: string, data: Partial<Room>): Promise<Room | null> {
@@ -49,6 +56,7 @@ export class InMemoryRoomRepository implements RoomRepository {
     };
 
     this.rooms.set(roomId, updatedRoom);
+
     return updatedRoom;
   }
 
@@ -103,5 +111,31 @@ export class InMemoryRoomRepository implements RoomRepository {
     logger.info(`Room ${roomId} ended (in-memory)`);
 
     return room;
+  }
+
+  async saveMessage(roomId: string, message: Message): Promise<Message> {
+    const roomMessages = this.messages.get(roomId) || [];
+
+    // Criar uma nova mensagem com ID
+    const newMessage: Message = {
+      id: message.id || uuidv4(),
+      roomId,
+      userId: message.userId,
+      userName: message.userName,
+      content: message.content,
+      timestamp: message.timestamp || new Date(),
+    };
+
+    roomMessages.push(newMessage);
+    this.messages.set(roomId, roomMessages);
+
+    logger.info(`Message saved for room ${roomId} (in-memory)`);
+
+    return newMessage;
+  }
+
+  async getMessages(roomId: string): Promise<Message[]> {
+    const messages = this.messages.get(roomId) || [];
+    return [...messages].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   }
 }

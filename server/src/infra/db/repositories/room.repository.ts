@@ -1,5 +1,6 @@
-import { Room, Participant, RoomRepository } from "../../../modules/rooms/interfaces/room.interface";
+import { Room, Participant, RoomRepository, Message } from "../../../modules/rooms/interfaces/room.interface";
 import RoomModel from "../models/room.model";
+import MessageModel from "../models/message.model";
 import logger from "../../../config/logger";
 import { isConnected } from "../config/db.config";
 
@@ -31,6 +32,20 @@ export class MongoDBRoomRepository implements RoomRepository {
       return room ? room.toObject() : null;
     } catch (error) {
       logger.error(`Error finding room ${roomId}:`, error);
+      throw error;
+    }
+  }
+
+  async findAll(): Promise<Room[]> {
+    try {
+      if (!isConnected()) {
+        throw new Error("MongoDB is not connected");
+      }
+
+      const rooms = await RoomModel.find();
+      return rooms.map((room) => room.toObject());
+    } catch (error) {
+      logger.error("Error finding all rooms:", error);
       throw error;
     }
   }
@@ -128,6 +143,59 @@ export class MongoDBRoomRepository implements RoomRepository {
       return room ? room.toObject() : null;
     } catch (error) {
       logger.error(`Error ending room ${roomId}:`, error);
+      throw error;
+    }
+  }
+
+  async saveMessage(roomId: string, message: Message): Promise<Message> {
+    try {
+      if (!isConnected()) {
+        throw new Error("MongoDB is not connected");
+      }
+
+      const newMessage = new MessageModel({
+        roomId,
+        userId: message.userId,
+        userName: message.userName,
+        content: message.content,
+        timestamp: message.timestamp,
+      });
+
+      await newMessage.save();
+      logger.info(`Message saved for room ${roomId}`);
+
+      return {
+        id: newMessage._id.toString(),
+        roomId: newMessage.roomId,
+        userId: newMessage.userId,
+        userName: newMessage.userName,
+        content: newMessage.content,
+        timestamp: newMessage.timestamp,
+      };
+    } catch (error) {
+      logger.error(`Error saving message for room ${roomId}:`, error);
+      throw error;
+    }
+  }
+
+  async getMessages(roomId: string): Promise<Message[]> {
+    try {
+      if (!isConnected()) {
+        throw new Error("MongoDB is not connected");
+      }
+
+      const messages = await MessageModel.find({ roomId }).sort({ timestamp: 1 });
+
+      return messages.map((msg) => ({
+        id: msg._id.toString(),
+        roomId: msg.roomId,
+        userId: msg.userId,
+        userName: msg.userName,
+        content: msg.content,
+        timestamp: msg.timestamp,
+      }));
+    } catch (error) {
+      logger.error(`Error getting messages for room ${roomId}:`, error);
       throw error;
     }
   }

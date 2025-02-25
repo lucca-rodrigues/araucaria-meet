@@ -45,6 +45,14 @@ export class WebSocketManager {
           // Envia lista de participantes atual
           socket.emit("room-participants", room.participants);
 
+          // Busca as mensagens da sala e envia para o participante
+          try {
+            const messages = await this.roomService.getMessages(roomId);
+            socket.emit("room-messages", messages);
+          } catch (error) {
+            logger.error(`Error getting messages for room ${roomId}:`, error);
+          }
+
           logger.info(`Client ${socket.id} joined room ${roomId}`);
         } catch (error) {
           logger.error("Error in join-room handler:", error);
@@ -72,9 +80,19 @@ export class WebSocketManager {
         socket.to(roomId).emit("participant-media-toggle", { participantId, type, enabled });
       });
 
-      socket.on("send-message", (data: { roomId: string; message: any }) => {
-        const { roomId, message } = data;
-        this.io.to(roomId).emit("new-message", message);
+      socket.on("send-message", async (data: { roomId: string; message: any }) => {
+        try {
+          const { roomId, message } = data;
+
+          // Salvar a mensagem no banco de dados
+          await this.roomService.saveMessage(roomId, message.userId, message.userName, message.message);
+
+          // Emitir a mensagem para todos os participantes da sala
+          this.io.to(roomId).emit("new-message", message);
+        } catch (error) {
+          logger.error(`Error in send-message handler for room ${data.roomId}:`, error);
+          socket.emit("room-error", { message: "Failed to send message" });
+        }
       });
 
       socket.on("disconnect", () => {
